@@ -1,0 +1,95 @@
+---
+uti: com.xamarin.workbook
+platform: iOS
+packages: []
+---
+
+# Animare una UIView usando UIKit
+
+Come prima cosa abbiamo bisogno di usare i seguenti namespaces:
+
+```csharp
+using System;
+using System.Drawing;
+
+using Foundation;
+using UIKit;
+using ObjCRuntime;
+using CoreGraphics;
+```
+
+Creiamo ora una classe `AnimationViewController` che deriva da `UIViewController`:
+
+```csharp
+public class AnimationViewController : UIViewController{}
+```
+
+Creiamo un’istanza del nostro view controller e impostiamolo come rootviewcontroller, impostando la sua dimensione al valore dello schermo, con un colore di background giallo paglierino:
+
+```csharp
+var aVC = new AnimationViewController();
+KeyWindow.RootViewController = aVC;
+aVC.View.BackgroundColor = UIColor.FromRGB(.98f,0.98f,0.78f);
+```
+
+Definiamo ora le variabili di tipo *UIImageView* e *CGPoint:*
+
+```csharp
+UIImageView imageView;
+CGPoint pt;
+```
+
+Creiamo un’istanza di UIImageView e impostiamo il valore della sua proprietà *Image* a una nuova istanza di *UIImage* che carica la nostra immagine dal file:
+
+```csharp
+var xpos = UIScreen.MainScreen.Bounds.Width / 2 -50;
+var ypos = UIScreen.MainScreen.Bounds.Height / 2 -50;
+imageView = new UIImageView(new CGRect(xpos, ypos, 100, 100));
+imageView.Image = UIImage.FromFile("logo.png");
+```
+
+Aggiungiamo la UIImageView alla View come subview:
+
+```csharp
+aVC.View.AddSubview(imageView);
+```
+
+Salviamo nella variabile *point* il valore della proprietà *Center* della *UIImageView*.
+
+```csharp
+pt = imageView.Center;
+```
+
+Impostiamo ora l’animazione sulla UIView, effettuando una chiamata al metodo `UIView.BeginAnimations`, seguita dall’impostazione delle proprietà di animazione:
+
+```csharp
+UIView.BeginAnimations ("slideAnimation");
+
+UIView.SetAnimationDuration (2);
+UIView.SetAnimationCurve (UIViewAnimationCurve.EaseInOut);
+UIView.SetAnimationRepeatCount (1);
+UIView.SetAnimationRepeatAutoreverses (false);
+```
+
+Impostiamo l’Animation Delegate e il Selector (function name) da chiamare quando l’animazione termina:
+
+```csharp
+UIView.SetAnimationDelegate (aVC);
+UIView.SetAnimationDidStopSelector (new Selector ("animationDidStop:finished:context:"));
+```
+
+Impostiamo la Center property della UIImageView tal punto di arrivo dell’animazione. Automaticamente verrà lanciata l’animazione che porta dal punto attuale al punto finale.
+
+```csharp
+var xpos = imageView.Center.X;
+var ypos = UIScreen.MainScreen.Bounds.Top + imageView.Frame.Height / 2 + 20;
+
+imageView.Center = new CGPoint (xpos, ypos);
+```
+
+Com’è facile notare, poiché l’animazione è impostata a una volta senza ritorno, l’immagine va dalla posizone del centro iniziale a quella finale. Impostando un nuovo punto di arrivo, ad esempio quello precedentemente salvato in `pt`, abbiamo ancora l’effeto animazione:
+
+```csharp
+imageView.Center = pt;
+```
+

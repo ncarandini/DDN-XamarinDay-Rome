@@ -1,0 +1,48 @@
+---
+uti: com.xamarin.workbook
+platform: WPF
+packages: []
+---
+
+```csharp
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+```
+
+```csharp
+var tb = new TextBlock() {Text = "Hello Workbook!"}
+```
+
+```csharp
+Grid grid = Application.Current.Windows[0].Content as Grid;
+```
+
+```csharp
+grid.Children.Clear();
+```
+
+```csharp
+grid.Children.Add(tb);
+```
+
+```csharp
+((TextBlock)grid.Children[0]).Text;
+```
+
+```csharp
+tb.Margin = new Thickness(20);
+```
+
+```csharp
+tb.FontSize = 45;
+```
+
+```csharp
+grid.Background = new SolidColorBrush(Colors.LightGray);
+```
+
+```csharp
+tb.Margin = new Thickness(12);
+```
+

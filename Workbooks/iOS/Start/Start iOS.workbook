@@ -1,0 +1,93 @@
+---
+uti: com.xamarin.workbook
+platform: iOS
+packages: []
+---
+
+# Anatomia di una iOS Application
+
+Il contenitore di base di un’app iOS è l’oggetto Windows. Anche se è possibile avere app con più oggetti Windows, tipicamente se ne usa solo una.
+
+Per creare una nuova Window dichiariamo innanzitutto una istanza di `UIWindow`, e successivamente utilizziamo il metodo `MakeKeyAndVisible` per renderla visibile:
+
+```csharp
+var window = new UIWindow(UIScreen.MainScreen.Bounds);
+window.MakeKeyAndVisible()
+```
+
+Guardando il simulatore, è possibile vedere uno schermo vuoto e bianco. Al momento non c’è nulla di visibile, quindi andiamo a creare qualcosa.
+
+Un’app iOS usa un View Controller per gestire tutte le views crea e distrugge le view, gestisce le interazioni dell’utente con le view e si coordina con altri oggetti. Ci possono essere diversi View Controllers, di diverso tipo (es. `TableViewController`), nella medesima app, che lavorano l’uno con l’altro. Iniziamo col creare un singolo UIViewController:
+
+```csharp
+var controller = new UIViewController()
+```
+
+Abbiamo già detto che la maggiorparte delle app utilizzano una singola Window. E ogni Window ha un singolo **Root View Controller**, che è il primo View Controller che l’utente vede e con cui interagisce.
+
+Impostiamo dunque il nostro View Controller (controller) in modo da essere il RootViewController della window:
+
+```csharp
+window.RootViewController = controller
+```
+
+```csharp
+controller.View.BackgroundColor = UIColor.Gray //new UIColor(0.3f,0.7f,0.9f,1);
+```
+
+Sperimentiamo con altri colori!
+
+* Provare ad impostare il colore del background a qualcosa di differente.
+
+* Provare ad utilizzare un colore RBG *(Suggerimento: Creare una nuova istanza di UIColor, assegnare i valori nfloat di Red, Blue, Green, and Alpha, e impostare il background all’istanza di UIColor creata).*
+
+In questo modo, incominciamo a vedere come funziona la gerarchia delle View di un’app iOS.
+
+Creiamo ora un’altra view, per mostrare un’immagine, calcolando prima le coordinate in alto a sinistra sulla base:
+
+* della grandezza con la quale vogliamo mostrare l’immagine
+
+* della larghezza e altezza dellla finestra(ovvero dello schermo)
+
+```csharp
+var imageWidth = 150;
+var imageHeight = 150;
+var xpos = UIScreen.MainScreen.Bounds.Width / 2 - imageWidth / 2;
+var ypos = UIScreen.MainScreen.Bounds.Height / 2 - imageHeight / 2;
+var imageView = new UIImageView(new CGRect(xpos, ypos, imageWidth, imageHeight));
+imageView.Image = UIImage.FromFile("logo.png");
+```
+
+Assegnamo ora questa View al ViewController:
+
+```csharp
+controller.View.AddSubview(imageView);
+```
+
+Mostrare qualcosa su uno schermo va bene, ma tipicamente un’app offre più viste, con la possibilità di navigare tra di esse. Per farlo si usa un Navigation Controller, che gestisce la navigazione all’interno dell’app. Un Navigation Controller è un UI-less controller che gestisce uno stack dei vari View Controller che gli vengono aggiunti.
+
+E’ possibile passare il primo View Controller come parametro durante la creazione dell’instanza del Navigation Controller.
+
+Ma prima di poter fare ciò occorre prima togliere il nostro controller dall’essere il RootViewController della Window:
+
+```csharp
+window.RootViewController = null;
+```
+
+Ora è possibile passare il nostro View Controller (controller) come parametro alla creazione del nostro Navigation Controller.
+
+```csharp
+var navigationController = new UINavigationController(controller);
+```
+
+Per vedere il tutto, impostiamo il RootViewController al nostro NavigationController.
+
+```csharp
+window.RootViewController = navigationController;
+```
+
+Adesso cambiamo alcune proprietà del View Controller’s per rendere la nostra app più “user friendly”. Ad esempio impostando il titolo della navigazione del View Controller:
+
+```csharp
+controller.NavigationItem.Title = "Hello Workbooks!";
+```
